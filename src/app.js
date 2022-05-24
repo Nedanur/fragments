@@ -6,6 +6,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 
+const passport = require('passport');
+const authorization = require('./authorization');
+
 // version and author from our package.json file
 
 const logger = require('./logger');
@@ -29,6 +32,9 @@ app.use(cors());
 
 // Use gzip/deflate compression middleware
 app.use(compression());
+
+passport.use(authorization.strategy());
+app.use(passport.initialize());
 
 // Define a simple health check route. If the server is running
 // we'll respond with a 200 OK.  If not, the server isn't healthy.
