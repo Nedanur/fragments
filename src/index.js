@@ -5,7 +5,7 @@ require('dotenv').config();
 
 // We want to log any crash cases so we can debug later from logs.
 const logger = require('./logger');
-const unneededVariable = 'This variable is never used';
+
 
 // If we're going to crash because of an uncaught exception, log it first.
 // https://nodejs.org/api/process.html#event-uncaughtexception
@@ -23,3 +23,4 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Start our server
 require('./server');
+const unneededVariable = 'This variable is never used';
