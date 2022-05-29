@@ -3,11 +3,14 @@
 /**
  * Get a list of fragments for the current user
  */
+ const { createSuccessResponse } = require('../../response');
+
  module.exports = (req, res) => {
     // TODO: this is just a placeholder to get something working...
     //I changed this code for 'curl -i localhost:8080/v1/fragments'
-    res.status(200).json({
+    res.status(200).json(
+      createSuccessResponse({
       status: 'ok',
       fragments: [],
-    });
+    }));
   };
