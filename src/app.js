@@ -8,6 +8,7 @@ const compression = require('compression');
 
 const passport = require('passport');
 const authorization = require('./authorization');
+// const { createErrorResponse } = require('./response');
 
 // version and author from our package.json file
 
