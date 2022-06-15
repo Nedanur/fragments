@@ -70,17 +70,11 @@ class Fragment {
    * @returns Promise<Fragment>
    */
    static async byId(ownerId, id) {
-    try {
-      const fragment = await readFragment(ownerId, id);
-      if (fragment) {
-        if (fragment instanceof Fragment === false) {
-          return new Fragment(fragment);
-        } else {
-          return fragment;
-        }
-      }
-    } catch (err) {
-      throw new Error('Cant read fragment');
+    const data = await readFragment(ownerId, id);
+    if (!data) {
+      throw new Error('User not found');
+    } else {
+      return new Fragment(data);
     }
   }
 
