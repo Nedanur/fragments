@@ -4,13 +4,11 @@
  * Get a list of fragments for the current user
  */
  const { createSuccessResponse } = require('../../response');
+ const { Fragment } = require('../../model/fragment');
 
- module.exports = (req, res) => {
-    // TODO: this is just a placeholder to get something working...
-    //I changed this code for 'curl -i localhost:8080/v1/fragments'
-    res.status(200).json(
-      createSuccessResponse({
-      status: 'ok',
-      fragments: [],
-    }));
-  };
+ module.exports = async (req, res) => {
+  const fragments = await Fragment.byUser(req.user);
+  res.status(200).json(createSuccessResponse({
+    fragments: fragments,
+  }));
+};
