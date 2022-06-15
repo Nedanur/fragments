@@ -123,17 +123,15 @@ class Fragment {
    * @returns Promise
    */
    async setData(data) {
-    if (!Buffer.isBuffer(data)) {
-      throw new Error('data is not a Buffer');
-    } else {
-      this.save();
-      try {
-        return await writeFragmentData(this.ownerId, this.id, data);
-      } catch (err) {
-        throw new Error('unable to set fragment data');
-      }
+    if (!data) {
+      logger.Error('Data is not a supporeted type');
     }
+    this.updated = new Date().toISOString();
+    this.size = Buffer.byteLength(data);
+    await writeFragment(this);
+    return await writeFragmentData(this.ownerId, this.id, data);
   }
+
 
   get mimeType() {
     const { type } = contentType.parse(this.type);
