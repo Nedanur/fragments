@@ -124,7 +124,7 @@ class Fragment {
    */
    async setData(data) {
     if (!data) {
-      logger.Error('Data is not a supporeted type');
+      logger.Error('Data is not a supported type');
     }
     this.updated = new Date().toISOString();
     this.size = Buffer.byteLength(data);
