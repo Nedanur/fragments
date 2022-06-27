@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
 
   const data = req.body;
   const user = req.user;
- 
+  logger.debug('Post: ' + req.body);
   logger.debug(user, 'POST request: user');
   logger.debug(data, 'POST request: fragment buffer');
 
@@ -20,6 +20,7 @@ module.exports = async (req, res) => {
     logger.debug({ fragment }, 'New fragment created');
     
     res.setHeader('Content-type', fragment.type);
+    //    res.set('Location', `${process.env.API_URL}/v1/fragments/${fragment.id}`);
     res.setHeader('Location', api + '/v1/fragments/' + fragment.id);
     res.status(200).json(
       createSuccessResponse({
@@ -28,8 +29,8 @@ module.exports = async (req, res) => {
       })
     );
 
-  } catch (e) {
-    logger.warn(e.message, 'Error posting fragment');
-    res.status(500).json(createErrorResponse(500, e.message));
+  } catch (err) {
+    logger.warn(err, 'Error posting fragment');
+    res.status(500).json(createErrorResponse(500, err));
   }
 };
