@@ -17,6 +17,9 @@ const logger = require('../logger');
 
 const validTypes = [
   `text/plain`,
+  `text/markdown`,
+  `text/html`,
+  `application/json`,
 ];
 
 class Fragment {
@@ -27,7 +30,7 @@ class Fragment {
       throw new Error('size must be a number');
     } else if (size < 0) {
       throw new Error('size cannot be negative');
-    } else if (!Fragment.isSupportedType(type)) {
+    } else if (!(Fragment.isSupportedType(type))) {
       throw new Error('invalid type');
     } else {
       this.id = id || nanoid();
@@ -56,12 +59,7 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    const fragment = await readFragment(ownerId, id);
-    if (fragment) {
-      return fragment;
-    } else {
-      throw new Error('No fragment with this id');
-    }
+    return await readFragment(ownerId, id);
   }
 
   /**
@@ -88,7 +86,7 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   async getData() {
-    return Buffer.from(await readFragmentData(this.ownerId, this.id));
+    return await readFragmentData(this.ownerId, this.id);
   }
 
   /**
