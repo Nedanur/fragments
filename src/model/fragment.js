@@ -16,10 +16,16 @@ const {
 const logger = require('../logger');
 
 const validTypes = [
-  `text/plain`,
-  `text/markdown`,
-  `text/html`,
-  `application/json`,
+  'text/plain',
+  'text/markdown',
+  'text/html',
+  'application/json',
+  /*
+  `image/png`,
+  `image/jpeg`,
+  `image/webp`,
+  `image/gif`,
+  */
 ];
 
 class Fragment {
@@ -30,7 +36,7 @@ class Fragment {
       throw new Error('size must be a number');
     } else if (size < 0) {
       throw new Error('size cannot be negative');
-    } else if (!(Fragment.isSupportedType(type))) {
+    } else if (!Fragment.isSupportedType(type)) {
       throw new Error('invalid type');
     } else {
       this.id = id || nanoid();
@@ -151,9 +157,8 @@ class Fragment {
    */
   static isSupportedType(value) {
     logger.debug('isSupportedType: ' + value);
-    let valid = false;
-    validTypes.forEach((format) => (valid = value.includes(format) ? true : false));
-    return valid;
+    let result = validTypes.some((element) => value.includes(element));
+    return result;
   }
 }
 
