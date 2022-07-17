@@ -12,4 +12,3 @@ jest*
 tests/
 tests/.htpasswd
 *.md
-.env
