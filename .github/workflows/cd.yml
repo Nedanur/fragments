@@ -88,6 +88,6 @@ jobs:
           aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
           region: us-east-1
           application_name: fragments
-          environment_name: fragments-env-3
+          environment_name: fragments-env
           version_label: ${{ env.VERSION }}
           deployment_package: ${{ env.COMPOSE_FILE }}

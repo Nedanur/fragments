@@ -51,7 +51,6 @@ COPY --chown=node:node ./src ./src
 
 # Copy our HTPASSWD file
 COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
-
 USER node
 
 # ENTRYPOINT ["/usr/bin/dumb-init", "--"]
