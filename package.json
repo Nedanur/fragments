@@ -1,7 +1,7 @@
 {
   "name": "fragments",
   "private": true,
-  "version": "0.7.13",
+  "version": "0.7.14",
   "description": "CCP555 Fragments lab1",
   "scripts": {
     "test:integration": "hurl --test --glob \"tests/integration/**/*.hurl\"",
