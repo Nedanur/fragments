@@ -87,7 +87,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
           region: us-east-1
-          application_name: fragments
-          environment_name: Fragments-env-1
+          application_name: assignment3
+          environment_name: Assignment3-env
           version_label: ${{ env.VERSION }}
           deployment_package: ${{ env.COMPOSE_FILE }}
