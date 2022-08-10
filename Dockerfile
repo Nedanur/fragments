@@ -50,7 +50,8 @@ COPY --chown=node:node --from=dependencies /app /app/
 COPY --chown=node:node ./src ./src
 
 # Copy our HTPASSWD file
-COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
+COPY --chown=node:node ./.htpasswd ./.htpasswd
+
 USER node
 
 # ENTRYPOINT ["/usr/bin/dumb-init", "--"]
@@ -60,6 +61,3 @@ CMD ["dumb-init", "node", "src/index.js"]
 # We run our service on port 8080
 # The EXPOSE instruction is mostly for documentation
 EXPOSE 8080
-
-HEALTHCHECK --interval=10s --timeout=30s --start-period=5s --retries=3 \
-CMD curl --fail localhost:8080 || exit 1
