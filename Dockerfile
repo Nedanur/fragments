@@ -28,8 +28,8 @@ COPY package.json package-lock.json ./
 # Copy the package.json and package-lock.json files into the working dir (/app)
 COPY package*.json ./
 
-# Install node dependencies defined in package-lock.json
-RUN npm install
+# # Install node dependencies defined in package-lock.json
+# RUN npm install
 
 # Copy src/
 COPY ./src ./src
