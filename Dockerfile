@@ -1,14 +1,10 @@
 # Docker instructions necessary for Docker Engine to build an image of my service
 
 # Use node version 16.15.1
-
-# Stage 0: use larger base node image to install dependencies
-FROM node:16.14.0@sha256:fd86131ddf8e0faa8ba7a3e49b6bf571745946e663e4065f3bff0a07204c1dde AS dependencies
+FROM node:16.15.0
 
 LABEL maintainer="Nedanur Basoglu"
 LABEL description="Fragments node.js microservice"
-
-ENV NODE_ENV=production
 
 # We default to use port 8080 in our service
 ENV PORT=8080
@@ -30,34 +26,59 @@ COPY package*.json /app/
 # Copy the package.json and package-lock.json files into the working dir (/app)
 COPY package*.json ./
 
-RUN npm ci --only=production
+# Copy the package.json and package-lock.json files into the working dir (/app)
+COPY package.json package-lock.json ./
 
-###################################################
+# Install node dependencies defined in package-lock.json
+RUN npm install
 
-# Stage 1..
-FROM node:16.14.0-alpine3.14@sha256:98a87dfa76dde784bb4fe087518c839697ce1f0e4f55e6ad0b49f0bfd5fbe52c AS main
-
-RUN apk update && apk add --no-cache dumb-init=~1.2.5
-
-ENV NODE_ENV=production
-
-WORKDIR /app
-
-# Copy cached dependencies from previous stage so we don't have to download
-COPY --chown=node:node --from=dependencies /app /app/
-
-# Copy source code into the image
-COPY --chown=node:node ./src ./src
+# Copy src/
+COPY ./src ./src
 
 # Copy our HTPASSWD file
-COPY --chown=node:node ./.htpasswd ./.htpasswd
+COPY ./tests/.htpasswd ./tests/.htpasswd
 
-USER node
-
-# ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-# Start the container by running our server
-CMD ["dumb-init", "node", "src/index.js"]
+# Run the server
+CMD ["node", "src/index.js"]
 
 # We run our service on port 8080
-# The EXPOSE instruction is mostly for documentation
-EXPOSE 8080
+EXPOSE 8080 
+
+# # Dockerfile for https://github.com/Seneca-ICTOER/Intro2C
+
+# # Stage 0: Install alpine Linux + node + yarn + dependencies
+# FROM node:16.14-alpine@sha256:2c6c59cf4d34d4f937ddfcf33bab9d8bbad8658d1b9de7b97622566a52167f2b AS dependencies
+
+# ENV NODE_ENV=production
+
+# WORKDIR /app
+
+# # copy dep files and install the production deps
+# COPY package.json yarn.lock ./
+# RUN yarn
+
+# #######################################################################
+
+# # Stage 1: use dependencies to build the site
+# FROM node:16.14-alpine@sha256:2c6c59cf4d34d4f937ddfcf33bab9d8bbad8658d1b9de7b97622566a52167f2b AS builder
+
+# WORKDIR /app
+# # Copy cached dependencies from previous stage so we don't have to download
+# COPY --from=dependencies /app /app
+# # Copy source code into the image
+# COPY . .
+# # Build the site to build/
+# RUN yarn build
+
+# ########################################################################
+
+# # Stage 2: nginx web server to host the built site
+# FROM nginx:stable-alpine@sha256:74694f2de64c44787a81f0554aa45b281e468c0c58b8665fafceda624d31e556 AS deploy
+
+# # Put our build/ into /usr/share/nginx/html/ and host static files
+# COPY --from=builder /app/build/ /usr/share/nginx/html/
+
+# EXPOSE 80
+
+# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+#   CMD curl --fail localhost:80 || exit 1 

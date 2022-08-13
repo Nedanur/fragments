@@ -105,7 +105,7 @@ jobs:
           # Define an Environment Variable with our Docker Hub Repo
           # Replace `username` with your Docker Hub username and `fragments`
           # with whatever you've named your Docker Hub repo
-          DOCKERHUB_REPO: nbasoglu1/fragments
+          DOCKERHUB_REPO: nbasoglu1/fragment
           # Define an Environment Variable with the current git commit's sha
           # Use the `github` context to get this, see:
           # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
