@@ -1,10 +1,9 @@
-# Docker instructions necessary for Docker Engine to build an image of my service
-
-# Use node version 16.15.1
 FROM node:16.15.0
 
 LABEL maintainer="Nedanur Basoglu"
 LABEL description="Fragments node.js microservice"
+
+ENV NODE_ENV=production
 
 # We default to use port 8080 in our service
 ENV PORT=8080
@@ -24,10 +23,10 @@ WORKDIR /app
 COPY package*.json /app/
 
 # Copy the package.json and package-lock.json files into the working dir (/app)
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Copy the package.json and package-lock.json files into the working dir (/app)
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
 # Install node dependencies defined in package-lock.json
 RUN npm install
@@ -38,47 +37,27 @@ COPY ./src ./src
 # Copy our HTPASSWD file
 COPY ./tests/.htpasswd ./tests/.htpasswd
 
-# Run the server
-CMD ["node", "src/index.js"]
+###################################################
 
-# We run our service on port 8080
-EXPOSE 8080 
+# # Stage 1..
+# FROM node:16.14.0-alpine3.14@sha256:98a87dfa76dde784bb4fe087518c839697ce1f0e4f55e6ad0b49f0bfd5fbe52c AS main
 
-# # Dockerfile for https://github.com/Seneca-ICTOER/Intro2C
-
-# # Stage 0: Install alpine Linux + node + yarn + dependencies
-# FROM node:16.14-alpine@sha256:2c6c59cf4d34d4f937ddfcf33bab9d8bbad8658d1b9de7b97622566a52167f2b AS dependencies
+# RUN apk update && apk add --no-cache dumb-init
 
 # ENV NODE_ENV=production
 
-# WORKDIR /app
-
-# # copy dep files and install the production deps
-# COPY package.json yarn.lock ./
-# RUN yarn
-
-# #######################################################################
-
-# # Stage 1: use dependencies to build the site
-# FROM node:16.14-alpine@sha256:2c6c59cf4d34d4f937ddfcf33bab9d8bbad8658d1b9de7b97622566a52167f2b AS builder
-
-# WORKDIR /app
 # # Copy cached dependencies from previous stage so we don't have to download
-# COPY --from=dependencies /app /app
+# COPY --chown=node:node --from=dependencies /app /app/
+
 # # Copy source code into the image
-# COPY . .
-# # Build the site to build/
-# RUN yarn build
+# COPY --chown=node:node ./src ./src
 
-# ########################################################################
+# USER node
 
-# # Stage 2: nginx web server to host the built site
-# FROM nginx:stable-alpine@sha256:74694f2de64c44787a81f0554aa45b281e468c0c58b8665fafceda624d31e556 AS deploy
+# # ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+# Start the container by running our server
+CMD ["dumb-init", "node", "src/index.js"]
 
-# # Put our build/ into /usr/share/nginx/html/ and host static files
-# COPY --from=builder /app/build/ /usr/share/nginx/html/
-
-# EXPOSE 80
-
-# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-#   CMD curl --fail localhost:80 || exit 1 
+# We run our service on port 8080
+# The EXPOSE instruction is mostly for documentation
+EXPOSE 8080
