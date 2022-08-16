@@ -3,9 +3,9 @@ Authorization: Basic dXNlcjFAZW1haWwuY29tOnBhc3N3b3JkMQ==
 Content-Type: audio/mpeg
 ```Unsupported ...```
 
-HTTP/1.1 415
+HTTP/1.1 401
 [Asserts]
 header "Content-Type" startsWith "application/json"
 jsonpath "$.status" == "error"
-jsonpath "$.error.code" == 415
+jsonpath "$.error.code" == 401
 jsonpath "$.error.message" isString
