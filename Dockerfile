@@ -55,9 +55,6 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 # # Copy our HTPASSWD file
 # COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
 
-# USER node
-
-# ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 # Start the container by running our server
 CMD ["npm", "start"]
 
