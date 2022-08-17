@@ -5,7 +5,7 @@
 FROM node:16.14.0
 
 # LABEL adds metadata to an image
-LABEL maintainer="Yoonkyung Kim"
+LABEL maintainer="Nedanur Basoglu"
 LABEL description="Fragments node.js microservice"
 
 # Environmental variables become part of the build image and will persist in any containers run using this image
