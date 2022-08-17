@@ -1,16 +1,15 @@
 const { Fragment } = require('../../src/model/fragment');
 
 // Wait for a certain number of ms. Returns a Promise.
-const wait = async (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
+const wait = async (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const validTypes = [
   `text/plain`,
-  /*
-   Currently, only text/plain is supported. Others will be added later.
-
   `text/markdown`,
   `text/html`,
   `application/json`,
+  /*
+   Currently, only text/plain is supported. Others will be added later.
   `image/png`,
   `image/jpeg`,
   `image/webp`,
@@ -246,9 +245,8 @@ describe('Fragment class', () => {
       const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
       await fragment.save();
       await fragment.setData(Buffer.from('a'));
-
       await Fragment.delete('1234', fragment.id);
-      expect(() => Fragment.byId('1234', fragment.id)).rejects.toThrow();
+      expect(await Fragment.byId('1234', fragment.id)).toBeUndefined();
     });
   });
 });

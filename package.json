@@ -39,6 +39,8 @@
     "http-auth": "^4.1.9",
     "http-auth-passport": "^1.0.6",
     "logger": "^0.0.1",
+    "markdown-it": "^13.0.1",
+    "mz": "^2.7.0",
     "nanoid": "^3.1.30",
     "passport": "^0.6.0",
     "passport-http-bearer": "^1.0.1",
