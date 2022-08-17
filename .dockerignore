@@ -10,5 +10,4 @@ tests/
 .prettier*
 jest*
 tests/
-!tests/.htpasswd
-*.md
+!./.htpasswd

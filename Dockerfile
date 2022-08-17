@@ -1,9 +1,15 @@
-FROM node:16.15.0
+# Docker instructions necessary for Docker Engine to build an image of my service
 
-LABEL maintainer="Nedanur Basoglu"
+# Parent (base) image to use as a starting point for our own image
+# use specific version to make sure our image is as close to our dev env as possible
+FROM node:16.14.0
+
+# LABEL adds metadata to an image
+LABEL maintainer="Yoonkyung Kim"
 LABEL description="Fragments node.js microservice"
 
-ENV NODE_ENV=production
+# Environmental variables become part of the build image and will persist in any containers run using this image
+# Note we can define things that will always be different at run-time instead of build-time
 
 # We default to use port 8080 in our service
 ENV PORT=8080
@@ -17,43 +23,24 @@ ENV NPM_CONFIG_LOGLEVEL=warn
 ENV NPM_CONFIG_COLOR=false
 
 # Use /app as our working directory
+# It'll create /app and enter it, so all subsequent commands will be relative to /app
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files into /app
+# (copy files & folders from build context to a path inside image)
 COPY package*.json /app/
 
-# Copy the package.json and package-lock.json files into the working dir (/app)
-COPY package.json package-lock.json ./
+# since we WORKDIR is set to /app, we could use relative path too
+# COPY package*.json ./
 
-# Copy the package.json and package-lock.json files into the working dir (/app)
-COPY package*.json ./
+# Install node dependencies defined in package-lock.json
+RUN npm install
 
-# # Install node dependencies defined in package-lock.json
-# RUN npm install
-
-# Copy src/
+# Copy src to /app/src/
 COPY ./src ./src
 
 # Copy our HTPASSWD file
-COPY ./tests/.htpasswd ./tests/.htpasswd
-
-# # Stage 1..
-# FROM node:16.15.0-alpine3.14@sha256:98a87dfa76dde784bb4fe087518c839697ce1f0e4f55e6ad0b49f0bfd5fbe52c AS main
-
-# RUN apk update && apk add --no-cache dumb-init
-
-# ENV NODE_ENV=production
-
-# WORKDIR /app
-
-# # Copy cached dependencies from previous stage so we don't have to download
-# COPY --chown=node:node --from=dependencies /app /app/
-
-# # Copy source code into the image
-# COPY --chown=node:node ./src ./src
-
-# # Copy our HTPASSWD file
-# COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
+COPY ./.htpasswd ./.htpasswd
 
 # Start the container by running our server
 CMD ["npm", "start"]
