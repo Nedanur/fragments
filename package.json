@@ -1,7 +1,7 @@
 {
   "name": "fragments",
   "private": true,
-  "version": "0.17.4",
+  "version": "0.17.5",
   "description": "CCP555 Fragments lab1",
   "scripts": {
     "test:watch": "jest -c jest.config.js --runInBand --watch --",
