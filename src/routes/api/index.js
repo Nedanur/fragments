@@ -19,14 +19,14 @@
        // a Buffer (e.g., `Buffer.isBuffer(req.body) === true`). If not, `req.body`
        // will be equal to an empty Object `{}` and `Buffer.isBuffer(req.body) === false`
        const { type } = contentType.parse(req);
-       logger.debug('After parse: ' + type);
+       logger.debug('Type after parse: ' + type);
        return Fragment.isSupportedType(type);
      },
    });
  
  // Define our first route, which will be: GET /v1/fragments
  router.get('/fragments', require('./get'));
- 
+ router.delete('/fragments/:id', require('./delete'));
  // GET /v1/fragments/:id
  router.get('/fragments/:id', require('./get-by-id'));
  
@@ -36,4 +36,3 @@
  router.post('/fragments', rawBody(), require('./post'));
  
  module.exports = router;
- 

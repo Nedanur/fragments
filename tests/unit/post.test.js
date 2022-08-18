@@ -25,7 +25,23 @@ describe('POST /v1/fragments', () => {
     const res = await request(app).post('/v1/fragments').auth('user1@email.com', 'password1').send();
     expect(res.statusCode).toBe(500);
   });
-
+  test('response include a Location header with a URL to GET the fragment', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send('This is fragment');
+    expect(res.statusCode).toBe(201);
+    expect(res.headers.location).toEqual(`${process.env.API_URL}/v1/fragments/${JSON.parse(res.text).fragment.id}`);
+  });
+  test('get unsupported type error', () => 
+    request(app)
+      .post('/v1/fragments')
+      .set('Content-Type', 'audio/mpeg')
+      .auth('user1@email.com', 'password1')
+      .send('aa')
+      .expect(415)
+  );
 
 });
 
