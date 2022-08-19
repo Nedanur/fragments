@@ -2,7 +2,11 @@
 const { nanoid } = require('nanoid');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
-
+const md = require('markdown-it')({
+  html: true,
+});
+const sharp = require('sharp');
+var mime = require('mime-types');
 // Functions for working with fragment metadata/data using our DB
 const {
   readFragment,
@@ -20,12 +24,10 @@ const validTypes = [
   'text/markdown',
   'text/html',
   'application/json',
-  /*
-  `image/png`,
-  `image/jpeg`,
-  `image/webp`,
-  `image/gif`,
-  */
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/gif',
 ];
 
 class Fragment {
@@ -55,7 +57,11 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    return await listFragments(ownerId, expand);
+    try {
+      return await listFragments(ownerId, expand);
+    } catch (err) {
+      throw new Error('Error getting frgaments');
+    }
   }
 
   /**
@@ -65,7 +71,16 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    return await readFragment(ownerId, id);
+    try {
+      const frag = await readFragment(ownerId, id);
+      if (frag && frag instanceof Fragment === false) {
+        return new Fragment(frag);
+      } else {
+        return frag;
+      }
+    } catch (err) {
+      throw new Error('Error reading frgaments');
+    }
   }
 
   /**
@@ -75,7 +90,11 @@ class Fragment {
    * @returns Promise
    */
   static async delete(ownerId, id) {
-    return await deleteFragment(ownerId, id);
+    try {
+      return await deleteFragment(ownerId, id);
+    } catch (err) {
+      throw new Error('Error deleting fragments');
+    }
   }
 
   /**
@@ -83,8 +102,12 @@ class Fragment {
    * @returns Promise
    */
   save() {
-    this.updated = new Date().toISOString();
-    return writeFragment(this);
+    try {
+      this.updated = new Date().toISOString();
+      return writeFragment(this);
+    } catch (err) {
+      throw new Error('Error saving fragments');
+    }
   }
 
   /**
@@ -92,7 +115,11 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   async getData() {
-    return await readFragmentData(this.ownerId, this.id);
+    try {
+      return await readFragmentData(this.ownerId, this.id);
+    } catch (err) {
+      throw new Error('Error readind fragments');
+    }
   }
 
   /**
@@ -106,7 +133,11 @@ class Fragment {
     } else {
       this.size = Buffer.byteLength(data);
       this.save();
-      return await writeFragmentData(this.ownerId, this.id, data);
+      try {
+        return await writeFragmentData(this.ownerId, this.id, data);
+      } catch (err) {
+        throw new Error('Error setting fragments');
+      }
     }
   }
 
@@ -159,6 +190,36 @@ class Fragment {
     logger.debug('isSupportedType: ' + value);
     let result = validTypes.some((element) => value.includes(element));
     return result;
+  }
+  /**
+   * Returns the data converted to the desired type
+   * @param {Buffer} data fragment data to be converted
+   * @param {string} extension the type extension you want to convert to (desired type)
+   * @returns {Buffer} converted fragment data
+   */
+  async convertType(data, extension) {
+    let desiredType = mime.lookup(extension);
+    const avail = this.formats;
+    if (!avail.includes(desiredType)) {
+      logger.warn('Cant covert to this  type');
+      return false;
+    }
+    let resultdata = data;
+    if (this.mimeType !== desiredType) {
+      if (this.mimeType === 'text/markdown' && desiredType === 'text/html') {
+        resultdata = md.render(data.toString());
+        resultdata = Buffer.from(resultdata);
+      } else if (desiredType === 'image/jpeg') {
+        resultdata = await sharp(data).jpeg().toBuffer();
+      } else if (desiredType === 'image/png') {
+        resultdata = await sharp(data).png().toBuffer();
+      } else if (desiredType === 'image/webp') {
+        resultdata = await sharp(data).webp().toBuffer();
+      } else if (desiredType === 'image/gif') {
+        resultdata = await sharp(data).gif().toBuffer();
+      }
+    }
+    return { resultdata, convertedType: desiredType };
   }
 }
 

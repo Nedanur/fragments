@@ -4,7 +4,7 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 module.exports = async (req, res) => {
   try {
     const fragment = await Fragment.byId(req.user, req.params.id);
-    logger.debug(`get by id req.params: ${JSON.stringify(req.params)}`);
+    logger.debug(`owner id and id: ${req.user}, ${req.params.id}`);
     if (!fragment) {
       return res.status(404).json(createErrorResponse(404, 'Theres no fragment with this id'));
     }
@@ -14,6 +14,6 @@ module.exports = async (req, res) => {
       })
     );
   } catch (e) {
-    res.status(500).json(createErrorResponse(500, e));
+    res.status(500).json(createErrorResponse(500, e.message));
   }
 };
